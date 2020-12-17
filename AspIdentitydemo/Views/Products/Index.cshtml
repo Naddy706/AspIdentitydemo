@@ -1,0 +1,114 @@
+﻿@model IEnumerable<AspIdentitydemo.Models.Product>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ImagePath)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category_Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Brand_Id)
+        </th>
+        <th></th>
+    </tr>
+
+    @{ var count = 0; }
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @*@foreach (var Images in (List<string>) ViewData["images"].ToString()) {
+
+
+        }*@
+
+
+                @*@Html.DisplayFor(modelItem => item.ImagePath)*@
+                @{
+                    var a = "Images" + count;
+                    var b = "imgdiv" + count;
+                }
+                <div id="@b"></div>
+
+                <input type="text" value="@item.ImagePath" id="@a" hidden />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category_Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand_Id)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+
+        {
+            count++;
+
+        }
+    }
+
+
+</table>
+    <input type="text" value="@count" id="count" hidden />
+
+
+<script>
+
+    var c = document.getElementById("count");
+    alert(c.value);
+    for (var x = 0; x <= c.value; x++) {
+
+        var xyz = "Images"+x;
+        var i = document.getElementById(xyz).value;
+        console.log(x);
+        console.log(xyz);
+        console.log(i);
+        var temp = new Array();
+        // This will return an array with strings "1", "2", etc.
+        temp = i.split(",");
+
+        for (var j = 0; j < temp.length - 1; j++) {
+            //   alert(temp[j]);
+            var url = temp[j];
+            url = url.substring(1);
+            url = window.location.origin + url;
+            console.log(url);
+
+            var im = document.createElement("IMG");
+            im.src = url
+            im.style.width = 100;
+            im.style.height = 100;
+            document.getElementById("imgdiv"+x).appendChild(im);
+            //document.getElementsByClassName("im").src =url;
+        }
+    }
+   
+  
+</script>
