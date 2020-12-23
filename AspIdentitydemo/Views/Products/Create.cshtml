@@ -43,8 +43,10 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Category_Id, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Category_Id, new { htmlAttributes = new { @class = "form-control" } })
+                @*single select*@
                 @*@Html.DropDownListFor(model => model.Category_Id, ViewBag.Categories as SelectList ,new { htmlAttributes = new { @class = "form-control" } })*@
+                @*multiple select*@
+                @Html.ListBoxFor(m => m.Category_Ids, (ViewBag.Categories as SelectList), htmlAttributes: new { @class = "form-control", id = "NormalDp", multiple = "multiple" })
                 @Html.ValidationMessageFor(model => model.Category_Id, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -52,8 +54,8 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Brand_Id, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Brand_Id, new { htmlAttributes = new { @class = "form-control" } })
-                @*@Html.DropDownListFor(model=> model.Brand_Id, ViewBag.Brands as SelectList, new { htmlAttributes = new { @class = "form-control" } })*@
+                @*@Html.EditorFor(model => model.Brand_Id, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.DropDownListFor(model=> model.Brand_Id, (ViewBag.Brands as SelectList), htmlAttributes: new { @class = "form-control", id = "BrandDp" })
                 @Html.ValidationMessageFor(model => model.Brand_Id, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -69,3 +71,24 @@
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
+
+
+@section Scripts{
+
+    <script>
+
+        $(document).ready(function () {
+            
+            //single searchable select 
+            $("#BrandDp").chosen({
+               // disable_search_threshold : 2
+                //disable_search :true,
+            });
+
+            //multiple select
+            $("#NormalDp").chosen();
+        });
+
+    </script>
+
+} 

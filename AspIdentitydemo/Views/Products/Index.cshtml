@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AspIdentitydemo.Models.Product>
+﻿@model IEnumerable<AspIdentitydemo.Models.showProducts>
 
 @{
     ViewBag.Title = "Index";
@@ -12,59 +12,62 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
+            Name
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Price)
+            Price
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.ImagePath)
+            Image
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Category_Id)
+            Category Name
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Brand_Id)
+            Brand Name
         </th>
         <th></th>
     </tr>
 
-    @{ var count = 0; }
+    @{ var count = 0;}
     @foreach (var item in Model)
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @item.Products.Name
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Price)
+                @item.Products.Price
             </td>
             <td>
-                @*@foreach (var Images in (List<string>) ViewData["images"].ToString()) {
-
-
-        }*@
-
-
-                @*@Html.DisplayFor(modelItem => item.ImagePath)*@
+            
                 @{
                     var a = "Images" + count;
                     var b = "imgdiv" + count;
+
+                    var c = "cat" + count;
+                    var d = "catdiv" + count;
                 }
                 <div id="@b"></div>
 
-                <input type="text" value="@item.ImagePath" id="@a" hidden />
+                <input type="text" value="@item.Products.ImagePath" id="@a" hidden />
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Category_Id)
+                <div id="@d"></div>
+             @*   @item.Products.Category_Id*@
+
+
+
+                <input type="text" value="@item.Products.Category_Id" id="@c" hidden />
+
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Brand_Id)
+                @item.Brands.Name
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                @Html.ActionLink("Edit", "Edit", new { id = item.Products.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Products.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Products.Id })
             </td>
         </tr>
 
@@ -79,36 +82,97 @@
     <input type="text" value="@count" id="count" hidden />
 
 
-<script>
+@section Scripts{
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script>
 
-    var c = document.getElementById("count");
-    alert(c.value);
-    for (var x = 0; x <= c.value; x++) {
 
-        var xyz = "Images"+x;
-        var i = document.getElementById(xyz).value;
-        console.log(x);
-        console.log(xyz);
-        console.log(i);
-        var temp = new Array();
-        // This will return an array with strings "1", "2", etc.
-        temp = i.split(",");
 
-        for (var j = 0; j < temp.length - 1; j++) {
-            //   alert(temp[j]);
-            var url = temp[j];
-            url = url.substring(1);
-            url = window.location.origin + url;
-            console.log(url);
 
-            var im = document.createElement("IMG");
-            im.src = url
-            im.style.width = 100;
-            im.style.height = 100;
-            document.getElementById("imgdiv"+x).appendChild(im);
-            //document.getElementsByClassName("im").src =url;
+    $(document).ready(function () {
+
+        var c = document.getElementById("count");
+
+        for (var x = 0; x <= c.value; x++) {
+
+            var xyz = "Images" + x;
+            var i = document.getElementById(xyz).value;
+           
+            //console.log(x);
+            //console.log(xyz);
+            //console.log(i);
+            var temp = new Array();
+            temp = i.split(",");
+
+            for (var j = 0; j < temp.length - 1; j++) {
+
+                var url = temp[j];
+                url = url.substring(1);
+                url = window.location.origin + url;
+                //console.log(url);
+
+                var im = document.createElement("IMG");
+                im.src = url
+                im.style.width = 100;
+                im.style.height = 100;
+                document.getElementById("imgdiv" + x).appendChild(im);
+            }
+
+
+            var cat = "cat" + x;
+            var cat_ids = document.getElementById(cat).value;
+
+            var temp1 = new Array();
+            temp1 = cat_ids.split(",");
+
+           // console.log(temp1);
+            for (var cj = 0; cj < temp1.length; cj++) {
+
+                // console.log(temp1[cj]);
+                get_cat(temp1[cj],x)
+
+
+            }
+
+
         }
+        function get_cat(ids,x){
+
+
+             $.ajax({
+            type: 'POST',
+            url: '@Url.Action("getcat")',
+            dataType: 'json',
+            data: { id: ids },
+            success: function (data) {
+                var items = '';
+                $.each(data, function (i, item) {
+                    console.log(item);
+
+                    var xy = document.createElement("SPAN");
+                    var t = document.createTextNode(" "+item+" ");
+                    xy.appendChild(t);
+                    xy.className = "well-sm";
+                    console.log(i);
+                    
+                   $("#catdiv" + x).append(xy);
+                                       
+                    
+                });
+            },
+            error: function (ex) {
+                var r = jQuery.parseJSON(response.responseText);
+                alert("Message: " + r.Message);
+                alert("StackTrace: " + r.StackTrace);
+                alert("ExceptionType: " + r.ExceptionType);
+            }
+        });
+
+        }
+
+
+    });
+
+    </script>
+
     }
-   
-  
-</script>

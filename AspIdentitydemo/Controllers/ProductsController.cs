@@ -9,33 +9,87 @@ using System.Web.Security;
 using System.Web.Mvc;
 using AspIdentitydemo.Models;
 using System.IO;
+using System.Data.SqlClient;
+using System.Configuration;
 
 namespace AspIdentitydemo.Controllers
 {
 
 
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class ProductsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+       
+        //public int[] a;
 
         // GET: Products
         public ActionResult Index()
         {
-            //List<string> list = new List<string>();
-            //foreach (var image in db.Products.ToList()) {
-            //    var d =image.ImagePath.Split(',');
-            //    list.Add(d.ToString());
+
+
+            //string[] values;
+            //List<string> ci = new List<string>();
+            //int c = 0;
+
+            //var con = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString();
+            //System.Data.SqlClient.SqlConnection myConnection = new System.Data.SqlClient.SqlConnection(con);
+
+            //System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("select Category_Id from Products", myConnection);
+
+            //myConnection.Open();
+            //System.Data.SqlClient.SqlDataReader Reader = command.ExecuteReader();
+            //while (Reader.Read())
+            //{
+            //    ci.Add(Reader["Category_Id"].ToString());
+
             //}
-            //for (var i = 0; i < list.Count(); i++)
+            //myConnection.Close();
+
+            //foreach (var i in ci)
             //{
 
-            //ViewData["images"] += list[i];
-                
+            //    values = i.Split(',');
+            //    for (int j = 0; j < values.Length; j++)
+            //    {
+            //        values[j] = values[j].Trim();
+            //        System.Diagnostics.Debug.WriteLine("catid" + values[j]);
+            //        System.Data.SqlClient.SqlCommand command1 = new System.Data.SqlClient.SqlCommand("select Name from Catagories where id=" + values[j], myConnection);
+
+            //        myConnection.Open();
+            //        System.Data.SqlClient.SqlDataReader Reader1 = command1.ExecuteReader();
+            //        while (Reader1.Read())
+            //        {
+
+            //            Reader1["Name"].ToString();
+            //        }
+            //        myConnection.Close();
+            //    }
+
             //}
-          //  System.Diagnostics.Debug.WriteLine("imagePath : " + list);
-            // now you have the same as in the first line
-            return View(db.Products.ToList());
+
+            List<Product> products = db.Products.ToList();
+            List<Brand> Brands = db.Brands.ToList();
+            List<Catagory> Categories = db.Catagories.ToList();
+          
+
+
+            var data=(from p in products
+             join b in Brands on p.Brand_Id equals b.Id into table1
+             from b in table1.DefaultIfEmpty()
+             //join c in Categories on p.Category_Id equals c.Id into table2
+             //from c in table2.DefaultIfEmpty()
+             select new showProducts { Products = p, Brands = b ,  });
+
+
+            return View(data.ToList());
+        }
+
+
+        public JsonResult getcat(int id)
+        {
+            var cat = db.Catagories.Where(x=>x.Id==id).Select(x=>x.Name);
+            return Json(cat, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Products/Details/5
@@ -105,9 +159,12 @@ namespace AspIdentitydemo.Controllers
                 }
                 else
                 {
+                    ViewBag.Categories = new SelectList(db.Catagories.ToList(), "Id", "Name");
 
-                    System.Diagnostics.Debug.WriteLine("imagePath" + product.ImagePath);
-
+                    ViewBag.Brands = new SelectList(db.Brands.ToList(), "Id", "Name");
+                    product.Category_Id = string.Join(",", product.Category_Ids);
+                    System.Diagnostics.Debug.WriteLine("Form data :" + product.Brand_Id, " cat id " + product.Category_Id);
+                    
                     db.Products.Add(product);
                     db.SaveChanges();
                     return RedirectToAction("Index");
@@ -115,6 +172,10 @@ namespace AspIdentitydemo.Controllers
 
 
             }
+            System.Diagnostics.Debug.WriteLine("Form data :" + product.Brand_Id," cat id "+ product.Category_Id);
+            ViewBag.Categories = new SelectList(db.Catagories.ToList(), "Id", "Name");
+
+            ViewBag.Brands = new SelectList(db.Brands.ToList(), "Id", "Name");
             return View(product);
         }
 
